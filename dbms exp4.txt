@@ -1,0 +1,157 @@
+SQL> create table departments(
+  2  deptno int primary key,
+  3  dept_name varchar(50),
+  4  location varchar(20));
+
+Table created.
+
+SQL> insert into departments values(10,'Accounting','New York');
+
+1 row created.
+
+SQL> insert into departments values(20,'Research','Dallas');
+
+1 row created.
+
+SQL> insert into departments values(30,'Sales','Chicago');
+
+1 row created.
+
+SQL> insert into departments values(40,'Operations','Boston');
+
+1 row created.
+SQL> create table empp(
+  2      emp_no int primary key,
+  3      birth_date DATE NOT NULL,
+  4      first_name varchar(14) NOT NULL,
+  5      last_name varchar(16) NOT NULL,
+  6      gender char(1) NOT NULL,
+  7     hire_date DATE NOT NULL,
+  8      salary FLOAT DEFAULT 7850.00,
+  9      job varchar(20) NOT NULL,
+ 10     deptno int,
+ 11    manager_id int,
+ 12     foreign key(deptno) references departments(deptno));
+
+Table created.
+
+SQL> INSERT INTO empp VALUES (7839, DATE'1955-11-17', 'John', 'Smith', 'M', DATE'1990-06-09', 5000.00, 'MANAGER', 10, NULL);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7566, DATE'1960-02-21', 'James', 'Brown', 'M', DATE'1991-04-02', 2450.00, 'CLERK', 20, 7839);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7654, DATE'1963-12-09', 'Scott', 'Allen', 'M', DATE'1989-06-04', 2975.00, 'SALESMAN', 30, 7839);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7934, DATE'1970-12-03', 'Adam', 'Martin', 'M', DATE'1993-07-09', 1300.00, 'CLERK', 30, 7839);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7788, DATE'1961-05-23', 'Alan', 'Walker', 'M', DATE'1990-09-14', 3000.00, 'ANALYST', 20, 7566);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7902, DATE'1958-11-07', 'Alice', 'Jones', 'F', DATE'1988-12-12', 1600.00, 'CLERK', 30, 7654);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7876, DATE'1962-01-14', 'George', 'Black', 'M', DATE'1989-01-20', 1100.00, 'CLERK', 40, 7566);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7844, DATE'1965-09-28', 'Diana', 'White', 'F', DATE'1992-05-21', 2950.00, 'SALESMAN', 30, 7654);
+
+1 row created.
+
+SQL> INSERT INTO empp VALUES (7900, DATE'1972-06-19', 'Bob', 'King', 'M', DATE'1991-08-18', 850.00, 'CLERK', 10, 7839);
+
+1 row created.
+
+SQL> set linesize 500
+SQL> select * from departments;
+
+    DEPTNO DEPT_NAME                                          LOCATION
+---------- -------------------------------------------------- --------------------
+        10 Accounting                                         New York
+        20 Research                                           Dallas
+        30 Sales                                              Chicago
+        40 Operations                                         Boston
+
+SQL> select * from empp;
+
+    EMP_NO BIRTH_DAT FIRST_NAME     LAST_NAME        G HIRE_DATE     SALARY JOB                      DEPTNO MANAGER_ID
+---------- --------- -------------- ---------------- - --------- ---------- -------------------- ---------- ----------
+      7839 17-NOV-55 John           Smith            M 09-JUN-90       5000 MANAGER                      10
+      7566 21-FEB-60 James          Brown            M 02-APR-91       2450 CLERK                        20       7839
+      7654 09-DEC-63 Scott          Allen            M 04-JUN-89       2975 SALESMAN                     30       7839
+      7934 03-DEC-70 Adam           Martin           M 09-JUL-93       1300 CLERK                        30       7839
+      7788 23-MAY-61 Alan           Walker           M 14-SEP-90       3000 ANALYST                      20       7566
+      7902 07-NOV-58 Alice          Jones            F 12-DEC-88       1600 CLERK                        30       7654
+      7876 14-JAN-62 George         Black            M 20-JAN-89       1100 CLERK                        40       7566
+      7844 28-SEP-65 Diana          White            F 21-MAY-92       2950 SALESMAN                     30       7654
+      7900 19-JUN-72 Bob            King             M 18-AUG-91        850 CLERK                        10       7839
+
+9 rows selected.
+
+SQL> select first_name from empp where first_name like 'A%';
+
+FIRST_NAME
+--------------
+Adam
+Alan
+Alice
+
+SQL> select dept_name from departments where location in('New York','Dallas','Chicago');
+
+DEPT_NAME
+--------------------------------------------------
+Accounting
+Research
+Sales
+
+SQL> select first_name from empp where job in ('Clerk','Salesman','Analyst') and salary>3000;
+
+no rows selected
+
+SQL> select first_name, last_name from empp where job!='MANAGER';
+
+FIRST_NAME     LAST_NAME
+-------------- ----------------
+James          Brown
+Scott          Allen
+Adam           Martin
+Alan           Walker
+Alice          Jones
+George         Black
+Diana          White
+Bob            King
+
+8 rows selected.
+
+SQL> select first_name, last_name from empp where salary in(select max(salary) from empp);
+
+FIRST_NAME     LAST_NAME
+-------------- ----------------
+John           Smith
+
+SQL> select emp_no, first_name, last_name from empp where job='CLERK' and salary in(select max(salary) from empp where job='CLERK');
+
+    EMP_NO FIRST_NAME     LAST_NAME
+---------- -------------- ----------------
+      7566 James          Brown
+
+SQL> select first_name from empp where job='CLERK' and (salary > (select salary from empp where first_name='James')) or (salary < (select salary from empp where first_name='Scott'));
+
+FIRST_NAME
+--------------
+James
+Adam
+Alice
+George
+Bob
+
+5 rows selected.
