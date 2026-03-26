@@ -1,0 +1,23 @@
+ CREATE table test1(
+  sydate varchar(5));
+
+
+
+CREATE OR replace trigger tr_test1_del_upt_insr
+  before insert OR delete OR update on test1
+  for each row
+  declare
+  sydate CHAR(4);
+  begin
+  sydate:=to_char(sysdate,'dy');
+  IF sydate NOT in ('sat','sun') THEN
+  dbms_output.put_line('operation allowed');
+ELSE
+ raise_application_error(20001,'operation not allowed on weekends');
+ END IF;
+ END;
+ /
+
+Trigger created.
+
+SQL>
