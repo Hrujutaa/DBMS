@@ -1,0 +1,31 @@
+ CREATE TABLE route_header (
+  route_id NUMBER(5),
+  origin VARCHAR2(20),
+  destination VARCHAR2(20),
+  fare NUMBER(7,2),
+  distance NUMBER(3),
+  capacity NUMBER(3)
+  );
+
+
+
+ create or replace trigger tr_ins_up
+  before insert on route_header
+  for each row
+  begin
+  :new.origin:=UPPER(:new.origin);
+  :new.destination:=UPPER(:new.destination);
+  END;
+  /
+
+
+ create or replace trigger tr_upt_route_header
+  before update on route_header
+  for each row
+  begin
+  if :new.capacity<:old.capacity THEN
+  raise_application_error(-20001,'DO NOT reduce the capacity');
+  END IF;
+  END;
+  /
+
