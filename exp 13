@@ -1,0 +1,17 @@
+ create or replace trigger trig_upt_student
+  before update on student
+  begin
+  dbms_output.put_line('this is a statement level trigger that got fired');
+  END;
+  /
+
+
+
+ create or replace trigger trigg_upt_student
+  before update on student
+  for each row
+  begin
+  dbms_output.put_line('Row level trigger got fired');
+  END;
+  /
+
