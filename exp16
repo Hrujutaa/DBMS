@@ -1,0 +1,16 @@
+CREATE TABLE emp_dupp(
+    sal INT);
+ CREATE OR REPLACE TRIGGER salarytrigger
+    BEFORE INSERT ON emp_dupp
+    FOR EACH ROW
+    DECLARE
+    v_upper_salary_limit number (10,2);
+    v_lower_salary_limit number(10,2);
+    BEGIN
+    SELECT min(sal)*10 INTO v_upper_salary_limit FROM emp_dupp;
+    SELECT max(sal)/10 INTO v_lower_salary_limit FROM emp_dupp;
+   IF :new.sal NOT BETWEEN v_lower_salary_limit AND v_upper_salary_limit THEN
+   RAISE_APPLICATION_ERROR(-20021,'Salary out of allowed range');
+   END IF;
+   END;
+   /
